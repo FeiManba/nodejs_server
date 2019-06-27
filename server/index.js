@@ -34,6 +34,7 @@ app.post('/file_upload', function (req, res) {
 
 // 在 app 文件夹开启静态服务
 app.use(express.static('../app'));
+
 app.get('/', function (req, res) {
     res.send('Hello World');
 })
