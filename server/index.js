@@ -4,39 +4,55 @@ const path = require('path');
 const app = express();
 var fs = require("fs");
 var bodyParser = require('body-parser');
-var multer  = require('multer');
- 
+var multer = require('multer');
+var url = require('url')
+
 app.use('/public', express.static('public'));
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(multer({ dest: '/tmp/'}).array('image'));
-
-app.post('/file_upload', function (req, res) {
- 
-    console.log(req.files[0]);  // 上传的文件信息
-    
-    var des_file = __dirname + "/res/image/" + req.files[0].originalname;
-    fs.readFile( req.files[0].path, function (err, data) {
-         fs.writeFile(des_file, data, function (err) {
-          if( err ){
-               console.log( err );
-          }else{
-                response = {
-                    message:'File uploaded successfully', 
-                    filename:req.files[0].originalname
-               };
-           }
-           console.log( response );
-           res.end( JSON.stringify( response ) );
-        });
-    });
- })
-  
-
+app.use(multer({ dest: '/file_upload/' }).array('image'));
 // 在 app 文件夹开启静态服务
 app.use(express.static('../app'));
 
+app.post('/file_upload', function (req, res) {
+    var p_url = url.parse(req.url)
+    console.log(p_url)
+    if (req.files.length > 0) {
+        // for (let i = 0; i < req.files.length; i++) {
+        //     var des_file = __dirname + "/res/image/" + req.files[i].originalname;
+        //     fs.readFile(req.files[i].path, function (err, data) {
+        //         fs.writeFile(des_file, data, function (err) {
+        //             if (err) {
+        //                 console.log(err);
+        //             } else {
+        //                 response = {
+        //                     message: 'File uploaded successfully',
+        //                     filename: req.files[i].originalname
+        //                 };
+        //             }
+        //             res.end(JSON.stringify(response));
+        //         });
+        //     });
+        // }
+    }
+})
+
 app.get('/', function (req, res) {
-    res.send('Hello World');
+    res.writeHead(200, { 'Content-Type': 'text/html' })
+    fs.readFile('./server/index.html', function (error, data) {
+        if (error) throw error
+        res.write(data.toString())
+        res.end()
+    })
+})
+
+
+app.get('/text.json', function (req, res) {
+    res.writeHead(200, { 'Content-Type': 'text/json' })
+    fs.readFile('./server/res/text.json', function (error, data) {
+        if (error) throw error
+        res.write(data.toString())
+        res.end('读取完毕')
+    })
 })
 
 //  POST 请求
