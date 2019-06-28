@@ -9,30 +9,62 @@ var url = require('url')
 
 app.use('/public', express.static('public'));
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(multer({ dest: '/file_upload/' }).array('image'));
+app.use(multer({ dest: '/tmp/' }).array('image'));
 // 在 app 文件夹开启静态服务
 app.use(express.static('../app'));
 
-app.post('/file_upload', function (req, res) {
-    var p_url = url.parse(req.url)
-    console.log(p_url)
+
+//图片上传
+app.post('/file/upload/image', function (req, res) {
+    var p_url = url.parse(req.url, true, true)
+    console.log(p_url.query.sex)
     if (req.files.length > 0) {
-        // for (let i = 0; i < req.files.length; i++) {
-        //     var des_file = __dirname + "/res/image/" + req.files[i].originalname;
-        //     fs.readFile(req.files[i].path, function (err, data) {
-        //         fs.writeFile(des_file, data, function (err) {
-        //             if (err) {
-        //                 console.log(err);
-        //             } else {
-        //                 response = {
-        //                     message: 'File uploaded successfully',
-        //                     filename: req.files[i].originalname
-        //                 };
-        //             }
-        //             res.end(JSON.stringify(response));
-        //         });
-        //     });
+        for (let i = 0; i < req.files.length; i++) {
+            var des_file = __dirname + "/res/image/" + req.files[i].originalname;
+            fs.readFile(req.files[i].path, function (err, data) {
+                fs.writeFile(des_file, data, function (err) {
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        response = {
+                            message: 'File uploaded successfully',
+                            filename: req.files[i].originalname
+                        };
+                    }
+                    res.end(JSON.stringify(response));
+                });
+            });
+        }
+    }
+})
+
+// 视频上传
+app.post('/file/upload/video', function (req, res) {
+    var p_url = url.parse(req.url, true, true)
+    console.log(p_url.query.sex)
+    if (req.files.length > 0) {
+        
+        //监测文件夹是否存在
+        // var fso = new ActiveXObject("Scripting.FileSystemObject")
+        // if (fso.FileExists(__dirname + "/res/video/")) {
         // }
+
+        for (let i = 0; i < req.files.length; i++) {
+            var des_file = __dirname + "/res/video/" + req.files[i].originalname;
+            fs.readFile(req.files[i].path, function (err, data) {
+                fs.writeFile(des_file, data, function (err) {
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        response = {
+                            message: 'File uploaded successfully',
+                            filename: req.files[i].originalname
+                        };
+                    }
+                    res.end(JSON.stringify(response));
+                });
+            });
+        }
     }
 })
 
